@@ -1,0 +1,24 @@
+PODS:
+  - NCMB (2.3.7)
+  - NYXImagesKit (2.3)
+
+DEPENDENCIES:
+  - NCMB (from `https://github.com/NIFTYCloud-mbaas/ncmb_ios.git`)
+  - NYXImagesKit
+
+EXTERNAL SOURCES:
+  NCMB:
+    :git: https://github.com/NIFTYCloud-mbaas/ncmb_ios.git
+
+CHECKOUT OPTIONS:
+  NCMB:
+    :commit: 75a1b1b1b7c656dbb5da59b0ac10bd9d4754c226
+    :git: https://github.com/NIFTYCloud-mbaas/ncmb_ios.git
+
+SPEC CHECKSUMS:
+  NCMB: 705b707898a144664e033321d679859f18533803
+  NYXImagesKit: 8163e3335a40eaa173ca5bbbf81fafb57d3947eb
+
+PODFILE CHECKSUM: c6566de3eeba3510afc234bba6d619d56c5aad58
+
+COCOAPODS: 1.3.0
