@@ -105,8 +105,8 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
                     if error != nil {
                         print(error)
                     } else {
-                        postImageView.image = nil
-                        postTextView.text = nil
+                        self.postImageView.image = nil
+                        self.postTextView.text = nil
                         self.tabBarController?.selectedIndex = 0
                     }
                 })
