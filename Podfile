@@ -9,5 +9,8 @@ target 'InstaSample' do
 
 pod 'NCMB', :git => 'https://github.com/NIFTYCloud-mbaas/ncmb_ios.git'
 pod 'NYXImagesKit'
+pod 'UITextView+Placeholder'
+pod 'SVProgressHUD'
+pod 'Kingfisher'
 
 end

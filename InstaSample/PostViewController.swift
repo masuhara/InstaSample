@@ -9,8 +9,12 @@
 import UIKit
 import NYXImagesKit
 import NCMB
+import UITextView_Placeholder
+import SVProgressHUD
 
-class PostViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+class PostViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextViewDelegate {
+    
+    let placeholderImage = UIImage(named: "photo-placeholder")
     
     var resizedImage: UIImage!
     
@@ -23,7 +27,11 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        postImageView.image = placeholderImage
+        
+        postButton.isEnabled = false
+        postTextView.placeholder = "キャプションを書く"
+        postTextView.delegate = self
     }
 
     override func didReceiveMemoryWarning() {
@@ -39,6 +47,16 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
         postImageView.image = resizedImage
         
         picker.dismiss(animated: true, completion: nil)
+        
+        confirmContent()
+    }
+    
+    func textViewDidChange(_ textView: UITextView) {
+        confirmContent()
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        textView.resignFirstResponder()
     }
     
     @IBAction func selectImage() {
@@ -79,10 +97,13 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
     }
     
     @IBAction func sharePhoto() {
+        SVProgressHUD.show()
         let data = UIImagePNGRepresentation(resizedImage!)
-        let file = NCMBFile.file(withName: NCMBUser.current().objectId, data: data) as! NCMBFile
+        // ここを変更（ファイル名無いので）
+        let file = NCMBFile.file(with: data) as! NCMBFile
         file.saveInBackground({ (error) in
             if error != nil {
+                SVProgressHUD.dismiss()
                 let alert = UIAlertController(title: "画像アップロードエラー", message: error!.localizedDescription, preferredStyle: .alert)
                 let okAction = UIAlertAction(title: "OK", style: .default, handler: { (action) in
                     
@@ -98,14 +119,17 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
                     return
                 }
                 postObject?.setObject(self.postTextView.text!, forKey: "text")
-                postObject?.setObject(NCMBUser.current().objectId, forKey: "user")
+                postObject?.setObject(NCMBUser.current(), forKey: "user")
                 let url = "https://mb.api.cloud.nifty.com/2013-09-01/applications/vLEKsnidG4wHsPV7/publicFiles/" + file.name
                 postObject?.setObject(url, forKey: "imageUrl")
                 postObject?.saveInBackground({ (error) in
                     if error != nil {
                         print(error)
+                        SVProgressHUD.dismiss()
                     } else {
+                        SVProgressHUD.dismiss()
                         self.postImageView.image = nil
+                        self.postImageView.image = UIImage(named: "photo-placeholder")
                         self.postTextView.text = nil
                         self.tabBarController?.selectedIndex = 0
                     }
@@ -116,5 +140,18 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
         }
     }
     
+    func confirmContent() {
+        if postTextView.text.characters.count > 0 && postImageView.image != placeholderImage {
+            postButton.isEnabled = true
+        } else {
+            postButton.isEnabled = false
+        }
+    }
+    
+    @IBAction func cancel() {
+        if postTextView.isFirstResponder == true {
+            postTextView.resignFirstResponder()
+        }
+    }
 
 }

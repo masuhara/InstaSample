@@ -52,6 +52,10 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
             print("パスワードの不一致")
         }
         
+        let acl = NCMBACL()
+        acl.setPublicReadAccess(true)
+        user.acl = acl
+        
         user.signUpInBackground { (error) in
             if error != nil {
                 // エラーがあった場合

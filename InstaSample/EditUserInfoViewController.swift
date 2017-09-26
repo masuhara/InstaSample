@@ -77,7 +77,7 @@ class EditUserInfoViewController: UIViewController, UITextFieldDelegate, UITextV
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        let selectedImage = info[UIImagePickerControllerOriginalImage] as! UIImage
+        let selectedImage = info[UIImagePickerControllerEditedImage] as! UIImage
         
         let resizedImage = selectedImage.scale(byFactor: 0.4)
         
@@ -109,6 +109,7 @@ class EditUserInfoViewController: UIViewController, UITextFieldDelegate, UITextV
             if UIImagePickerController.isSourceTypeAvailable(.camera) == true {
                 let picker = UIImagePickerController()
                 picker.sourceType = .camera
+                picker.allowsEditing = true
                 picker.delegate = self
                 self.present(picker, animated: true, completion: nil)
             } else {
@@ -120,6 +121,7 @@ class EditUserInfoViewController: UIViewController, UITextFieldDelegate, UITextV
             if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) == true {
                 let picker = UIImagePickerController()
                 picker.sourceType = .photoLibrary
+                picker.allowsEditing = true
                 picker.delegate = self
                 self.present(picker, animated: true, completion: nil)
             } else {
