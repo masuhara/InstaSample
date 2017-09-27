@@ -98,7 +98,15 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
     
     @IBAction func sharePhoto() {
         SVProgressHUD.show()
-        let data = UIImagePNGRepresentation(resizedImage!)
+        
+        // 撮影した画像をデータ化したときに右に90度回転してしまう問題の解消
+        UIGraphicsBeginImageContext(resizedImage.size)
+        let rect = CGRect(x: 0, y: 0, width: resizedImage.size.width, height: resizedImage.size.height)
+        resizedImage.draw(in: rect)
+        resizedImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        let data = UIImagePNGRepresentation(resizedImage)
         // ここを変更（ファイル名無いので）
         let file = NCMBFile.file(with: data) as! NCMBFile
         file.saveInBackground({ (error) in

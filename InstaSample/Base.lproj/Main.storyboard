@@ -345,15 +345,21 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" editable="NO" text="Lorem ipsum dolor sit er elit lamet, consectetaur cillium " textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="A7h-iw-SuJ">
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="A7h-iw-SuJ">
                                 <rect key="frame" x="12" y="222" width="351" height="53"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="placeholder" value="プロフィール紹介文"/>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="placeholderColor">
+                                        <color key="value" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                             </textView>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Pbs-Qz-yRS">
-                                <rect key="frame" x="0.0" y="304" width="375" height="363"/>
+                                <rect key="frame" x="0.0" y="304" width="375" height="314"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="NKf-gm-40f">
@@ -392,7 +398,10 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="followerCountLabel" destination="edg-RT-qem" id="ZzB-qw-H04"/>
+                        <outlet property="followingCountLabel" destination="XPT-yD-ShH" id="iZ4-dB-nYC"/>
                         <outlet property="photoCollectionView" destination="Pbs-Qz-yRS" id="KRv-cW-xNW"/>
+                        <outlet property="postCountLabel" destination="qj3-c6-YTP" id="aYd-Qq-T4j"/>
                         <outlet property="userDisplayNameLabel" destination="vto-0l-9lf" id="Dqd-Ws-lPN"/>
                         <outlet property="userImageView" destination="Zjk-zR-zBp" id="oCR-q4-Gn1"/>
                         <outlet property="userIntroductionTextView" destination="A7h-iw-SuJ" id="Sy7-uT-2hG"/>

@@ -22,6 +22,12 @@ class UserPageViewController: UIViewController, UICollectionViewDataSource {
     
     @IBOutlet var photoCollectionView: UICollectionView!
     
+    @IBOutlet var postCountLabel: UILabel!
+    
+    @IBOutlet var followerCountLabel: UILabel!
+    
+    @IBOutlet var followingCountLabel: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -191,6 +197,9 @@ class UserPageViewController: UIViewController, UICollectionViewDataSource {
                     }
                 }
                 self.photoCollectionView.reloadData()
+                
+                // post数を表示
+                self.postCountLabel.text = String(self.posts.count)
             }
         })
     }
