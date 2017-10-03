@@ -42,7 +42,7 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         let selectedImage = info[UIImagePickerControllerOriginalImage] as! UIImage
         
-        resizedImage = selectedImage.scale(byFactor: 0.4)
+        resizedImage = selectedImage.scale(byFactor: 0.7)
         
         postImageView.image = resizedImage
         
@@ -132,8 +132,7 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
                 postObject?.setObject(url, forKey: "imageUrl")
                 postObject?.saveInBackground({ (error) in
                     if error != nil {
-                        print(error)
-                        SVProgressHUD.dismiss()
+                        SVProgressHUD.showError(withStatus: error!.localizedDescription)
                     } else {
                         SVProgressHUD.dismiss()
                         self.postImageView.image = nil
@@ -160,6 +159,19 @@ class PostViewController: UIViewController, UINavigationControllerDelegate, UIIm
         if postTextView.isFirstResponder == true {
             postTextView.resignFirstResponder()
         }
+        
+        let alert = UIAlertController(title: "投稿内容の破棄", message: "入力中の投稿内容を破棄しますか？", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: { (action) in
+            self.postTextView.text = nil
+            self.postImageView.image = UIImage(named: "photo-placeholder")
+            self.confirmContent()
+        })
+        let cancelAction = UIAlertAction(title: "キャンセル", style: .cancel, handler: { (action) in
+            alert.dismiss(animated: true, completion: nil)
+        })
+        alert.addAction(okAction)
+        alert.addAction(cancelAction)
+        self.present(alert, animated: true, completion: nil)
     }
 
 }

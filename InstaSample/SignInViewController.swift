@@ -8,6 +8,7 @@
 
 import UIKit
 import NCMB
+import SVProgressHUD
 
 class SignInViewController: UIViewController, UITextFieldDelegate {
     
@@ -37,22 +38,24 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             
             NCMBUser.logInWithUsername(inBackground: userIdTextField.text!, password: passwordTextField.text!) { (user, error) in
                 if error != nil {
-                    print(error)
+                    SVProgressHUD.showError(withStatus: error!.localizedDescription)
                 } else {
-                    // ログイン成功
-                    let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
-                    let rootViewController = storyboard.instantiateViewController(withIdentifier: "RootTabBarController")
-                    UIApplication.shared.keyWindow?.rootViewController = rootViewController
-                    
-                    // ログイン状態の保持
-                    let ud = UserDefaults.standard
-                    ud.set(true, forKey: "isLogin")
-                    ud.synchronize()
+                    if user?.object(forKey: "active") as? Bool == false {
+                        SVProgressHUD.setStatus("そのユーザーは退会済みです。")
+                    } else {
+                        // ログイン成功
+                        let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
+                        let rootViewController = storyboard.instantiateViewController(withIdentifier: "RootTabBarController")
+                        UIApplication.shared.keyWindow?.rootViewController = rootViewController
+                        
+                        // ログイン状態の保持
+                        let ud = UserDefaults.standard
+                        ud.set(true, forKey: "isLogin")
+                        ud.synchronize()
+                    }
                 }
             }
         }
-        
-        
     }
     
     

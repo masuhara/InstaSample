@@ -16,6 +16,7 @@ class Post {
     var createDate: Date
     var isLiked: Bool?
     var comments: [Comment]?
+    var likeCount: Int = 0
     
     init(objectId: String, user: User, imageUrl: String, text: String, createDate: Date) {
         self.objectId = objectId

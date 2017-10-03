@@ -33,7 +33,7 @@
 #import "NCMBScript.h"
 #import "NCMBScriptService.h"
 #import "NCMBSubclassing.h"
-#import "NCMBURLConnection.h"
+#import "NCMBURLSession.h"
 #import "NCMBUser.h"
 #import "NCMB_umbrella.h"
 #import "NSDataBase64Encode.h"

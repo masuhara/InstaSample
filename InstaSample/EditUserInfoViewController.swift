@@ -151,7 +151,7 @@ class EditUserInfoViewController: UIViewController, UITextFieldDelegate, UITextV
             if error != nil {
                 let alert = UIAlertController(title: "送信エラー", message: error!.localizedDescription, preferredStyle: .alert)
                 let okAction = UIAlertAction(title: "OK", style: .default, handler: { (action) in
-                    
+                    alert.dismiss(animated: true, completion: nil)
                 })
                 alert.addAction(okAction)
                 self.present(alert, animated: true, completion: nil)

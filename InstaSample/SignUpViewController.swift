@@ -8,6 +8,7 @@
 
 import UIKit
 import NCMB
+import SVProgressHUD
 
 class SignUpViewController: UIViewController, UITextFieldDelegate {
     
@@ -52,24 +53,31 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
             print("パスワードの不一致")
         }
         
-        let acl = NCMBACL()
-        acl.setPublicReadAccess(true)
-        user.acl = acl
-        
         user.signUpInBackground { (error) in
             if error != nil {
                 // エラーがあった場合
-                print(error)
+                SVProgressHUD.showError(withStatus: error!.localizedDescription)
             } else {
-                // 登録成功
-                let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
-                let rootViewController = storyboard.instantiateViewController(withIdentifier: "RootTabBarController")
-                UIApplication.shared.keyWindow?.rootViewController = rootViewController
-                
-                // ログイン状態の保持
-                let ud = UserDefaults.standard
-                ud.set(true, forKey: "isLogin")
-                ud.synchronize()
+                let acl = NCMBACL()
+                acl.setPublicReadAccess(true)
+                acl.setWriteAccess(true, for: user)
+                user.acl = acl
+                user.saveEventually({ (error) in
+                    if error != nil {
+                        SVProgressHUD.showError(withStatus: error!.localizedDescription)
+                        self.navigationController?.popViewController(animated: true)
+                    } else {
+                        // 登録成功
+                        let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
+                        let rootViewController = storyboard.instantiateViewController(withIdentifier: "RootTabBarController")
+                        UIApplication.shared.keyWindow?.rootViewController = rootViewController
+                        
+                        // ログイン状態の保持
+                        let ud = UserDefaults.standard
+                        ud.set(true, forKey: "isLogin")
+                        ud.synchronize()
+                    }
+                })
             }
         }
         

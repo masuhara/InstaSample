@@ -12,6 +12,7 @@ class User {
     var objectId: String
     var userName: String
     var displayName: String?
+    var introduction: String?
 
     init(objectId: String, userName: String) {
         self.objectId = objectId

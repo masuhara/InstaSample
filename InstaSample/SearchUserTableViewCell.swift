@@ -9,7 +9,7 @@
 import UIKit
 
 protocol SearchUserTableViewCellDelegate {
-    func didTapFollowButton(button: UIButton)
+    func didTapFollowButton(tableViewCell: UITableViewCell, button: UIButton)
 }
 
 class SearchUserTableViewCell: UITableViewCell {
@@ -18,7 +18,7 @@ class SearchUserTableViewCell: UITableViewCell {
     
     @IBOutlet var userImageView: UIImageView!
     @IBOutlet var userNameLabel: UILabel!
-    @IBOutlet var followButton: UIButton!
+    @IBOutlet var followButton: BorderButton!
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -32,7 +32,7 @@ class SearchUserTableViewCell: UITableViewCell {
     }
     
     @IBAction func tapFollowButton(button: UIButton) {
-        self.delegate?.didTapFollowButton(button: button)
+        self.delegate?.didTapFollowButton(tableViewCell: self, button: button)
     }
     
 }

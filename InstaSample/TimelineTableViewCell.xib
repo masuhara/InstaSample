@@ -81,7 +81,7 @@
                         </connections>
                     </button>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="10時間前" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="thM-QX-gnJ">
-                        <rect key="frame" x="15" y="556" width="74" height="21"/>
+                        <rect key="frame" x="15" y="556" width="339" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="system" pointSize="10"/>
                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
@@ -90,7 +90,10 @@
                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MTV-IN-Ep8">
                         <rect key="frame" x="50" y="444" width="23" height="20"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <state key="normal" title="い" backgroundImage="icons8-Speech Bubble-50.png"/>
+                        <state key="normal" backgroundImage="icons8-Speech Bubble-50.png"/>
+                        <connections>
+                            <action selector="showCommentsWithButton:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="sCR-jS-6jd"/>
+                        </connections>
                     </button>
                 </subviews>
             </tableViewCellContentView>

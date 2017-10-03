@@ -9,6 +9,7 @@
 import UIKit
 import NCMB
 import Kingfisher
+import SVProgressHUD
 
 class UserPageViewController: UIViewController, UICollectionViewDataSource {
     
@@ -39,7 +40,9 @@ class UserPageViewController: UIViewController, UICollectionViewDataSource {
     
     override func viewWillAppear(_ animated: Bool) {
         
-        loadPhoto()
+        loadPosts()
+        
+        loadFollowingInfo()
         
         if let user = NCMBUser.current() {
             userDisplayNameLabel.text = user.object(forKey: "displayName") as? String
@@ -100,7 +103,7 @@ class UserPageViewController: UIViewController, UICollectionViewDataSource {
         let signOutAction = UIAlertAction(title: "ログアウト", style: .default) { (action) in
             NCMBUser.logOutInBackground({ (error) in
                 if error != nil {
-                    print(error)
+                    SVProgressHUD.showError(withStatus: error!.localizedDescription)
                 } else {
                     // ログアウト成功
                     let storyboard = UIStoryboard(name: "SignIn", bundle: Bundle.main)
@@ -119,23 +122,36 @@ class UserPageViewController: UIViewController, UICollectionViewDataSource {
             
             let alert = UIAlertController(title: "会員登録の解除", message: "本当に退会しますか？退会した場合、再度このアカウントをご利用頂くことができません。", preferredStyle: .alert)
             let okAction = UIAlertAction(title: "OK", style: .default, handler: { (action) in
-                let user = NCMBUser.current()
-                // ユーザーの削除
-                user?.deleteInBackground({ (error) in
-                    if error != nil {
-                        print(error)
-                    } else {
-                        // ログアウト成功
-                        let storyboard = UIStoryboard(name: "SignIn", bundle: Bundle.main)
-                        let rootViewController = storyboard.instantiateViewController(withIdentifier: "RootNavigationController")
-                        UIApplication.shared.keyWindow?.rootViewController = rootViewController
-                        
-                        // ログイン状態の保持
-                        let ud = UserDefaults.standard
-                        ud.set(false, forKey: "isLogin")
-                        ud.synchronize()
-                    }
-                })
+                // ユーザーのアクティブ状態をfalseに
+                if let user = NCMBUser.current() {
+                    user.setObject(false, forKey: "active")
+                    user.saveInBackground({ (error) in
+                        if error != nil {
+                            SVProgressHUD.showError(withStatus: error!.localizedDescription)
+                        } else {
+                            // userのアクティブ状態を変更できたらログイン画面に移動
+                            let storyboard = UIStoryboard(name: "SignIn", bundle: Bundle.main)
+                            let rootViewController = storyboard.instantiateViewController(withIdentifier: "RootNavigationController")
+                            UIApplication.shared.keyWindow?.rootViewController = rootViewController
+                            
+                            // ログイン状態の保持
+                            let ud = UserDefaults.standard
+                            ud.set(false, forKey: "isLogin")
+                            ud.synchronize()
+                        }
+                    })
+                } else {
+                    // userがnilだった場合ログイン画面に移動
+                    let storyboard = UIStoryboard(name: "SignIn", bundle: Bundle.main)
+                    let rootViewController = storyboard.instantiateViewController(withIdentifier: "RootNavigationController")
+                    UIApplication.shared.keyWindow?.rootViewController = rootViewController
+                    
+                    // ログイン状態の保持
+                    let ud = UserDefaults.standard
+                    ud.set(false, forKey: "isLogin")
+                    ud.synchronize()
+                }
+                
             })
             
             let cancelAction = UIAlertAction(title: "キャンセル", style: .cancel, handler: { (action) in
@@ -159,47 +175,75 @@ class UserPageViewController: UIViewController, UICollectionViewDataSource {
         self.present(alertController, animated: true, completion: nil)
     }
     
-    func loadPhoto() {
+    func loadPosts() {
         let query = NCMBQuery(className: "Post")
         query?.includeKey("user")
         query?.whereKey("user", equalTo: NCMBUser.current())
         query?.findObjectsInBackground({ (result, error) in
             if error != nil {
-                print(error)
+                SVProgressHUD.showError(withStatus: error!.localizedDescription)
             } else {
                 self.posts = [Post]()
                 
                 for postObject in result as! [NCMBObject] {
                     // ユーザー情報をUserクラスにセット
                     let user = postObject.object(forKey: "user") as! NCMBUser
+                    let userModel = User(objectId: user.objectId, userName: user.userName)
+                    userModel.displayName = user.object(forKey: "displayName") as? String
                     
-                    // 退会済みユーザーの投稿を避けるため、userが存在しているかnilチェック
-                    if user.objectId != nil {
-                        let userModel = User(objectId: user.objectId, userName: user.userName)
-                        userModel.displayName = user.object(forKey: "displayName") as? String
-                        
-                        // 投稿の情報を取得
-                        let imageUrl = postObject.object(forKey: "imageUrl") as! String
-                        let text = postObject.object(forKey: "text") as! String
-                        
-                        // 2つのデータ(投稿情報と誰が投稿したか?)を合わせてPostクラスにセット
-                        let post = Post(objectId: postObject.objectId, user: userModel, imageUrl: imageUrl, text: text, createDate: postObject.createDate)
-                        
-                        // likeの状況(自分が過去にLikeしているか？)によってデータを挿入
-                        let likeUser = postObject.object(forKey: "likeUser") as? [String]
-                        if likeUser?.contains(NCMBUser.current().objectId) == true {
-                            post.isLiked = true
-                        } else {
-                            post.isLiked = false
-                        }
-                        // 配列に加える
-                        self.posts.append(post)
+                    // 投稿の情報を取得
+                    let imageUrl = postObject.object(forKey: "imageUrl") as! String
+                    let text = postObject.object(forKey: "text") as! String
+                    
+                    // 2つのデータ(投稿情報と誰が投稿したか?)を合わせてPostクラスにセット
+                    let post = Post(objectId: postObject.objectId, user: userModel, imageUrl: imageUrl, text: text, createDate: postObject.createDate)
+                    
+                    // likeの状況(自分が過去にLikeしているか？)によってデータを挿入
+                    let likeUser = postObject.object(forKey: "likeUser") as? [String]
+                    if likeUser?.contains(NCMBUser.current().objectId) == true {
+                        post.isLiked = true
+                    } else {
+                        post.isLiked = false
                     }
+                    // 配列に加える
+                    self.posts.append(post)
                 }
                 self.photoCollectionView.reloadData()
                 
                 // post数を表示
                 self.postCountLabel.text = String(self.posts.count)
+            }
+        })
+    }
+    
+    func loadFollowingInfo() {
+        // フォロー中
+        let followingQuery = NCMBQuery(className: "Follow")
+        followingQuery?.includeKey("user")
+        followingQuery?.whereKey("user", equalTo: NCMBUser.current())
+        followingQuery?.countObjectsInBackground({ (count, error) in
+            if error != nil {
+                SVProgressHUD.showError(withStatus: error!.localizedDescription)
+            } else {
+                // 非同期通信後のUIの更新はメインスレッドで
+                DispatchQueue.main.async {
+                    self.followingCountLabel.text = String(count)
+                }
+            }
+        })
+        
+        // フォロワー
+        let followerQuery = NCMBQuery(className: "Follow")
+        followerQuery?.includeKey("following")
+        followerQuery?.whereKey("following", equalTo: NCMBUser.current())
+        followerQuery?.countObjectsInBackground({ (count, error) in
+            if error != nil {
+                SVProgressHUD.showError(withStatus: error!.localizedDescription)
+            } else {
+                DispatchQueue.main.async {
+                    // 非同期通信後のUIの更新はメインスレッドで
+                    self.followerCountLabel.text = String(count)
+                }
             }
         })
     }

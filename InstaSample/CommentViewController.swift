@@ -65,7 +65,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         query?.includeKey("user")
         query?.findObjectsInBackground({ (result, error) in
             if error != nil {
-                print(error)
+                SVProgressHUD.showError(withStatus: error!.localizedDescription)
             } else {
                 for commentObject in result as! [NCMBObject] {
                     // コメントをしたユーザーの情報を取得
@@ -102,8 +102,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             object?.setObject(alert.textFields?.first?.text, forKey: "text")
             object?.saveInBackground({ (error) in
                 if error != nil {
-                    print(error)
-                    SVProgressHUD.dismiss()
+                    SVProgressHUD.showError(withStatus: error!.localizedDescription)
                 } else {
                     SVProgressHUD.dismiss()
                     self.loadComments()

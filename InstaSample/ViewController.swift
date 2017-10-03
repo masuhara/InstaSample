@@ -10,12 +10,19 @@ import UIKit
 import NCMB
 import Kingfisher
 import SVProgressHUD
+import SwiftDate
 
 class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, TimelineTableViewCellDelegate {
+    
+    var page = 0
+    
+    var isLoading: Bool = false
     
     var selectedPost: Post?
     
     var posts = [Post]()
+    
+    var followings = [NCMBUser]()
     
     @IBOutlet var timelineTableView: UITableView!
 
@@ -33,7 +40,8 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         // 引っ張って更新
         setRefreshControl()
         
-        loadTimeline()
+        // フォロー中のユーザーを取得する。その後にフォロー中のユーザーの投稿のみ読み込み
+        loadFollowingUsers()
     }
 
     override func didReceiveMemoryWarning() {
@@ -61,7 +69,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         let user = posts[indexPath.row].user
         cell.userNameLabel.text = user.displayName
         let userImageUrl = "https://mb.api.cloud.nifty.com/2013-09-01/applications/vLEKsnidG4wHsPV7/publicFiles/" + user.objectId
-        cell.userImageView.kf.setImage(with: URL(string: userImageUrl))
+        cell.userImageView.kf.setImage(with: URL(string: userImageUrl), placeholder: UIImage(named: "placeholder.jpg"), options: nil, progressBlock: nil, completionHandler: nil)
         
         cell.commentTextView.text = posts[indexPath.row].text
         let imageUrl = posts[indexPath.row].imageUrl
@@ -74,7 +82,34 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             cell.likeButton.setImage(UIImage(named: "heart-outline"), for: .normal)
         }
         
+        // Likeの数
+        cell.likeCountLabel.text = "\(posts[indexPath.row].likeCount)件"
+        
+        // タイムスタンプ(投稿日時) (※フォーマットのためにSwiftDateライブラリをimport)
+        cell.timestampLabel.text = posts[indexPath.row].createDate.string()
+        
         return cell
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // 一番下までスクロールされたことを検知
+        if timelineTableView.contentOffset.y + timelineTableView.frame.size.height > timelineTableView.contentSize.height && timelineTableView.isDragging {
+            if isLoading != true {
+                let query = NCMBQuery(className: "Post")
+                query?.whereKey("user", containedIn: followings)
+                query?.countObjectsInBackground({ (number, error) in
+                    if error != nil {
+                        SVProgressHUD.showError(withStatus: error!.localizedDescription)
+                    } else {
+                        // 次の件数が読み込めそうなら持ってくる
+                        if number > Int32(20 * self.page) && number > 20 {
+                            self.page = self.page + 1
+                        }
+                    }
+                })
+                self.loadTimeline()
+            }
+        }
     }
     
     func didTapLikeButton(tableViewCell: UITableViewCell, button: UIButton) {
@@ -86,7 +121,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 post?.addUniqueObject(NCMBUser.current().objectId, forKey: "likeUser")
                 post?.saveEventually({ (error) in
                     if error != nil {
-                        print(error)
+                        SVProgressHUD.showError(withStatus: error!.localizedDescription)
                     } else {
                         self.loadTimeline()
                     }
@@ -96,12 +131,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             let query = NCMBQuery(className: "Post")
             query?.getObjectInBackground(withId: posts[tableViewCell.tag].objectId, block: { (post, error) in
                 if error != nil {
-                    print(error)
+                    SVProgressHUD.showError(withStatus: error!.localizedDescription)
                 } else {
                     post?.removeObjects(in: [NCMBUser.current().objectId], forKey: "likeUser")
                     post?.saveEventually({ (error) in
                         if error != nil {
-                            print(error)
+                            SVProgressHUD.showError(withStatus: error!.localizedDescription)
                         } else {
                             self.loadTimeline()
                         }
@@ -118,14 +153,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             let query = NCMBQuery(className: "Post")
             query?.getObjectInBackground(withId: self.posts[tableViewCell.tag].objectId, block: { (post, error) in
                 if error != nil {
-                    print(error)
-                    SVProgressHUD.dismiss()
+                    SVProgressHUD.showError(withStatus: error!.localizedDescription)
                 } else {
                     // 取得した投稿オブジェクトを削除
                     post?.deleteInBackground({ (error) in
                         if error != nil {
-                            print(error)
-                            SVProgressHUD.dismiss()
+                            SVProgressHUD.showError(withStatus: error!.localizedDescription)
                         } else {
                             // 再読込
                             self.loadTimeline()
@@ -136,7 +169,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             })
         }
         let reportAction = UIAlertAction(title: "報告する", style: .destructive) { (action) in
-            print("通報しました")
+            SVProgressHUD.showSuccess(withStatus: "この投稿を報告しました。ご協力ありがとうございました。")
         }
         let cancelAction = UIAlertAction(title: "キャンセル", style: .cancel) { (action) in
             alertController.dismiss(animated: true, completion: nil)
@@ -161,17 +194,32 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     func loadTimeline() {
+        if isLoading == true {
+            return
+        } else {
+            isLoading = true
+        }
+        
         let query = NCMBQuery(className: "Post")
+        
+        // 件数
+        query?.limit = 20
+        query?.skip = Int32(20 * page)
         
         // 降順
         query?.order(byDescending: "createDate")
+        
         // 投稿したユーザーの情報も同時取得
         query?.includeKey("user")
+        
+        // フォロー中の人 + 自分の投稿だけ持ってくる
+        query?.whereKey("user", containedIn: followings)
 
         // オブジェクトの取得
         query?.findObjectsInBackground({ (result, error) in
             if error != nil {
-                print(error)
+                self.isLoading = false
+                SVProgressHUD.showError(withStatus: error!.localizedDescription)
             } else {
                 // 投稿を格納しておく配列を初期化(これをしないとreload時にappendで二重に追加されてしまう)
                 self.posts = [Post]()
@@ -180,8 +228,8 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                     // ユーザー情報をUserクラスにセット
                     let user = postObject.object(forKey: "user") as! NCMBUser
                     
-                    // 退会済みユーザーの投稿を避けるため、userが存在しているかnilチェック
-                    if user.objectId != nil {
+                    // 退会済みユーザーの投稿を避けるため、activeがfalse以外のモノだけを表示
+                    if user.object(forKey: "active") as? Bool != false {
                         let userModel = User(objectId: user.objectId, userName: user.userName)
                         userModel.displayName = user.object(forKey: "displayName") as? String
                         
@@ -193,20 +241,28 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                         let post = Post(objectId: postObject.objectId, user: userModel, imageUrl: imageUrl, text: text, createDate: postObject.createDate)
                         
                         // likeの状況(自分が過去にLikeしているか？)によってデータを挿入
-                        let likeUser = postObject.object(forKey: "likeUser") as? [String]
-                        if likeUser?.contains(NCMBUser.current().objectId) == true {
+                        let likeUsers = postObject.object(forKey: "likeUser") as? [String]
+                        if likeUsers?.contains(NCMBUser.current().objectId) == true {
                             post.isLiked = true
                         } else {
                             post.isLiked = false
                         }
+                        
+                        // いいねの件数
+                        if let likes = likeUsers {
+                            post.likeCount = likes.count
+                        }
+                        
                         // 配列に加える
                         self.posts.append(post)
                     }
-                    
                 }
                 
                 // 投稿のデータが揃ったらTableViewをリロード
                 self.timelineTableView.reloadData()
+                
+                // ロード状態の解除
+                self.isLoading = false
             }
         })
     }
@@ -219,11 +275,32 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     func reloadTimeline(refreshControl: UIRefreshControl) {
         refreshControl.beginRefreshing()
-        self.loadTimeline()
+        self.loadFollowingUsers()
         // 更新が早すぎるので2秒遅延させる
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
             refreshControl.endRefreshing()
         }
+    }
+    
+    func loadFollowingUsers() {
+        // フォロー中の人だけ持ってくる
+        let query = NCMBQuery(className: "Follow")
+        query?.includeKey("user")
+        query?.includeKey("following")
+        query?.whereKey("user", equalTo: NCMBUser.current())
+        query?.findObjectsInBackground({ (result, error) in
+            if error != nil {
+                SVProgressHUD.showError(withStatus: error!.localizedDescription)
+            } else {
+                self.followings = [NCMBUser]()
+                for following in result as! [NCMBObject] {
+                    self.followings.append(following.object(forKey: "following") as! NCMBUser)
+                }
+                self.followings.append(NCMBUser.current())
+                
+                self.loadTimeline()
+            }
+        })
     }
 }
 

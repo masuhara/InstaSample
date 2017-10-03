@@ -7,10 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7A111DA91F81FB4400B8C237 /* ShowUserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A111DA81F81FB4400B8C237 /* ShowUserViewController.swift */; };
 		7A16CA3C1F76806700025FC7 /* PostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A16CA3B1F76806700025FC7 /* PostViewController.swift */; };
 		7A16CA3E1F783B4300025FC7 /* photo-placeholder@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A16CA3D1F783B4300025FC7 /* photo-placeholder@2x.png */; };
 		7A16CA401F783B7400025FC7 /* BorderButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A16CA3F1F783B7400025FC7 /* BorderButton.swift */; };
 		7A1F996F1F5F9371002AAB01 /* placeholder.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 7A1F996E1F5F9371002AAB01 /* placeholder.jpg */; };
+		7A4AE7BE1F8245150061FCCA /* APIKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A4AE7BD1F8245150061FCCA /* APIKey.swift */; };
+		7A4AE7C01F82541B0061FCCA /* PolicyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A4AE7BF1F82541B0061FCCA /* PolicyViewController.swift */; };
 		7A8A31061F4CD62000D700A1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A8A31051F4CD62000D700A1 /* AppDelegate.swift */; };
 		7A8A31081F4CD62000D700A1 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A8A31071F4CD62000D700A1 /* ViewController.swift */; };
 		7A8A310B1F4CD62000D700A1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7A8A31091F4CD62000D700A1 /* Main.storyboard */; };
@@ -42,10 +45,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7A111DA81F81FB4400B8C237 /* ShowUserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowUserViewController.swift; sourceTree = "<group>"; };
 		7A16CA3B1F76806700025FC7 /* PostViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostViewController.swift; sourceTree = "<group>"; };
 		7A16CA3D1F783B4300025FC7 /* photo-placeholder@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "photo-placeholder@2x.png"; sourceTree = "<group>"; };
 		7A16CA3F1F783B7400025FC7 /* BorderButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BorderButton.swift; sourceTree = "<group>"; };
 		7A1F996E1F5F9371002AAB01 /* placeholder.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = placeholder.jpg; sourceTree = "<group>"; };
+		7A4AE7BD1F8245150061FCCA /* APIKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKey.swift; sourceTree = "<group>"; };
+		7A4AE7BF1F82541B0061FCCA /* PolicyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolicyViewController.swift; sourceTree = "<group>"; };
 		7A8A31021F4CD61F00D700A1 /* InstaSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InstaSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A8A31051F4CD62000D700A1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7A8A31071F4CD62000D700A1 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -176,10 +182,12 @@
 			children = (
 				7A8A31051F4CD62000D700A1 /* AppDelegate.swift */,
 				7A8A31071F4CD62000D700A1 /* ViewController.swift */,
+				7A4AE7BF1F82541B0061FCCA /* PolicyViewController.swift */,
 				7A9B06341F78B5660036A441 /* CommentViewController.swift */,
 				7A9B063A1F79C3DF0036A441 /* SearchViewController.swift */,
 				7A8A31261F4CE16700D700A1 /* SignUpViewController.swift */,
 				7A8A31281F4CE55F00D700A1 /* SignInViewController.swift */,
+				7A111DA81F81FB4400B8C237 /* ShowUserViewController.swift */,
 				7A8A312A1F4CE93F00D700A1 /* UserPageViewController.swift */,
 				7A8A312C1F4CEFEC00D700A1 /* EditUserInfoViewController.swift */,
 				7A16CA3B1F76806700025FC7 /* PostViewController.swift */,
@@ -193,6 +201,7 @@
 				7A8A31251F4CDD5500D700A1 /* Images */,
 				7A8A31111F4CD62000D700A1 /* Info.plist */,
 				7A8A310C1F4CD62000D700A1 /* Assets.xcassets */,
+				7A4AE7BD1F8245150061FCCA /* APIKey.swift */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -320,6 +329,7 @@
 				"${BUILT_PRODUCTS_DIR}/NCMB/NCMB.framework",
 				"${BUILT_PRODUCTS_DIR}/NYXImagesKit/NYXImagesKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SVProgressHUD/SVProgressHUD.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftDate/SwiftDate.framework",
 				"${BUILT_PRODUCTS_DIR}/UITextView+Placeholder/UITextView_Placeholder.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -328,6 +338,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NCMB.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NYXImagesKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SVProgressHUD.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftDate.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/UITextView_Placeholder.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -359,10 +370,12 @@
 			files = (
 				7A9B06351F78B5660036A441 /* CommentViewController.swift in Sources */,
 				7A16CA3C1F76806700025FC7 /* PostViewController.swift in Sources */,
+				7A4AE7C01F82541B0061FCCA /* PolicyViewController.swift in Sources */,
 				7ACB8D231F68CF5B00E57029 /* TimelineTableViewCell.swift in Sources */,
 				7A16CA401F783B7400025FC7 /* BorderButton.swift in Sources */,
 				7A8A31291F4CE55F00D700A1 /* SignInViewController.swift in Sources */,
 				7A8A31271F4CE16700D700A1 /* SignUpViewController.swift in Sources */,
+				7A111DA91F81FB4400B8C237 /* ShowUserViewController.swift in Sources */,
 				7A8A312D1F4CEFEC00D700A1 /* EditUserInfoViewController.swift in Sources */,
 				7A8A312B1F4CE93F00D700A1 /* UserPageViewController.swift in Sources */,
 				7A9B063B1F79C3DF0036A441 /* SearchViewController.swift in Sources */,
@@ -372,6 +385,7 @@
 				7A8A31061F4CD62000D700A1 /* AppDelegate.swift in Sources */,
 				7A9B062F1F7893A50036A441 /* Post.swift in Sources */,
 				7A9B06311F7893C80036A441 /* User.swift in Sources */,
+				7A4AE7BE1F8245150061FCCA /* APIKey.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
