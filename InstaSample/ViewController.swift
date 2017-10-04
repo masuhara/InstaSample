@@ -13,11 +13,7 @@ import SVProgressHUD
 import SwiftDate
 
 class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, TimelineTableViewCellDelegate {
-    
-    var page = 0
-    
-    var isLoading: Bool = false
-    
+
     var selectedPost: Post?
     
     var posts = [Post]()
@@ -91,29 +87,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         return cell
     }
     
-//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        // 一番下までスクロールされたことを検知
-//        if timelineTableView.contentOffset.y + timelineTableView.frame.size.height > timelineTableView.contentSize.height && timelineTableView.isDragging {
-//            if isLoading != true {
-//                let query = NCMBQuery(className: "Post")
-//                query?.whereKey("user", containedIn: followings)
-//                query?.countObjectsInBackground({ (number, error) in
-//                    if error != nil {
-//                        SVProgressHUD.showError(withStatus: error!.localizedDescription)
-//                    } else {
-//                        // 次の件数が読み込めそうなら持ってくる
-//                        if number > Int32(20 * self.page) && number > 20 {
-//                            self.page = self.page + 1
-//                            self.loadTimeline()
-//                        }
-//                    }
-//                })
-//            }
-//        }
-//    }
-    
     func didTapLikeButton(tableViewCell: UITableViewCell, button: UIButton) {
-        // posts[tableViewCell.tag]
         
         if posts[tableViewCell.tag].isLiked == false || posts[tableViewCell.tag].isLiked == nil {
             let query = NCMBQuery(className: "Post")
@@ -194,18 +168,8 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     func loadTimeline() {
-        if isLoading == true {
-            return
-        } else {
-            isLoading = true
-        }
-        
         let query = NCMBQuery(className: "Post")
-        
-        // 件数
-        // query?.limit = 20
-        // query?.skip = Int32(20 * page)
-        
+
         // 降順
         query?.order(byDescending: "createDate")
         
@@ -218,7 +182,6 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         // オブジェクトの取得
         query?.findObjectsInBackground({ (result, error) in
             if error != nil {
-                self.isLoading = false
                 SVProgressHUD.showError(withStatus: error!.localizedDescription)
             } else {
                 // 投稿を格納しておく配列を初期化(これをしないとreload時にappendで二重に追加されてしまう)
@@ -230,6 +193,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                     
                     // 退会済みユーザーの投稿を避けるため、activeがfalse以外のモノだけを表示
                     if user.object(forKey: "active") as? Bool != false {
+                        // 投稿したユーザーの情報をUserモデルにまとめる
                         let userModel = User(objectId: user.objectId, userName: user.userName)
                         userModel.displayName = user.object(forKey: "displayName") as? String
                         
@@ -260,9 +224,6 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 
                 // 投稿のデータが揃ったらTableViewをリロード
                 self.timelineTableView.reloadData()
-                
-                // ロード状態の解除
-                self.isLoading = false
             }
         })
     }
