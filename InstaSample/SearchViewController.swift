@@ -34,7 +34,9 @@ class SearchViewController: UIViewController, UISearchBarDelegate, UITableViewDa
         
         // 余計な線を消す
         searchUserTableView.tableFooterView = UIView()
-        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
         loadUsers(searchText: nil)
     }
 
