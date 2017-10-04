@@ -91,26 +91,26 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         return cell
     }
     
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        // 一番下までスクロールされたことを検知
-        if timelineTableView.contentOffset.y + timelineTableView.frame.size.height > timelineTableView.contentSize.height && timelineTableView.isDragging {
-            if isLoading != true {
-                let query = NCMBQuery(className: "Post")
-                query?.whereKey("user", containedIn: followings)
-                query?.countObjectsInBackground({ (number, error) in
-                    if error != nil {
-                        SVProgressHUD.showError(withStatus: error!.localizedDescription)
-                    } else {
-                        // 次の件数が読み込めそうなら持ってくる
-                        if number > Int32(20 * self.page) && number > 20 {
-                            self.page = self.page + 1
-                        }
-                    }
-                })
-                self.loadTimeline()
-            }
-        }
-    }
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        // 一番下までスクロールされたことを検知
+//        if timelineTableView.contentOffset.y + timelineTableView.frame.size.height > timelineTableView.contentSize.height && timelineTableView.isDragging {
+//            if isLoading != true {
+//                let query = NCMBQuery(className: "Post")
+//                query?.whereKey("user", containedIn: followings)
+//                query?.countObjectsInBackground({ (number, error) in
+//                    if error != nil {
+//                        SVProgressHUD.showError(withStatus: error!.localizedDescription)
+//                    } else {
+//                        // 次の件数が読み込めそうなら持ってくる
+//                        if number > Int32(20 * self.page) && number > 20 {
+//                            self.page = self.page + 1
+//                            self.loadTimeline()
+//                        }
+//                    }
+//                })
+//            }
+//        }
+//    }
     
     func didTapLikeButton(tableViewCell: UITableViewCell, button: UIButton) {
         // posts[tableViewCell.tag]
@@ -203,8 +203,8 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         let query = NCMBQuery(className: "Post")
         
         // 件数
-        query?.limit = 20
-        query?.skip = Int32(20 * page)
+        // query?.limit = 20
+        // query?.skip = Int32(20 * page)
         
         // 降順
         query?.order(byDescending: "createDate")
